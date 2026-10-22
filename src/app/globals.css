@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-gradient: radial-gradient(at 0% 0%, #EDE9FE 0px, transparent 50%),
+                   radial-gradient(at 100% 0%, #E6F4EA 0px, transparent 50%),
+                   radial-gradient(at 100% 100%, #FEE2E2 0px, transparent 50%),
+                   radial-gradient(at 0% 100%, #E0F2FE 0px, transparent 50%),
+                   #FAF8F5;
+    --text-primary: #1E1B4B;
+    --text-secondary: #6B7280;
+  }
+
+  .dark {
+    --bg-gradient: radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%),
+                   radial-gradient(at 100% 0%, #064e3b 0px, transparent 50%),
+                   radial-gradient(at 100% 100%, #4c0519 0px, transparent 50%),
+                   radial-gradient(at 0% 100%, #082f49 0px, transparent 50%),
+                   #0F172A;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+  }
+
+  body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    min-height: 100vh;
+  }
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.15);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+.glass-modal {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 50px rgba(79, 70, 229, 0.15);
+}
+
+.dark .glass-modal {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Claymorphism Classes (Soft 3D squishy look) */
+.clay-btn {
+  background: linear-gradient(145deg, #ffffff, #f1f3f9);
+  box-shadow: 5px 5px 10px rgba(180, 185, 205, 0.4),
+              -5px -5px 10px rgba(255, 255, 255, 0.95),
+              inset 1px 1px 2px rgba(255, 255, 255, 0.9),
+              inset -1px -1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clay-btn:active {
+  transform: scale(0.96);
+  box-shadow: 2px 2px 5px rgba(180, 185, 205, 0.5),
+              -2px -2px 5px rgba(255, 255, 255, 0.95),
+              inset 2px 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.dark .clay-btn {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5),
+              -5px -5px 10px rgba(255, 255, 255, 0.04),
+              inset 1px 1px 2px rgba(255, 255, 255, 0.08),
+              inset -1px -1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.dark .clay-btn:active {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6),
+              -2px -2px 4px rgba(255, 255, 255, 0.02),
+              inset 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.clay-chip-active {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white !important;
+  box-shadow: 4px 4px 10px rgba(99, 102, 241, 0.4),
+              -2px -2px 6px rgba(255, 255, 255, 0.8),
+              inset 1px 1px 2px rgba(255, 255, 255, 0.5),
+              inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark .clay-chip-active {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  box-shadow: 4px 4px 12px rgba(99, 102, 241, 0.5),
+              -2px -2px 6px rgba(255, 255, 255, 0.1),
+              inset 1px 1px 2px rgba(255, 255, 255, 0.3),
+              inset -2px -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Hero Clay Mic Button */
+.clay-mic-hero {
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.45),
+              inset 0 3px 6px rgba(255, 255, 255, 0.6),
+              inset 0 -4px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clay-mic-hero:active {
+  transform: scale(0.94);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4),
+              inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.clay-mic-hero-recording {
+  background: linear-gradient(145deg, #f43f5e, #e11d48) !important;
+  box-shadow: 0 0 40px rgba(244, 63, 94, 0.6),
+              0 15px 35px rgba(225, 29, 72, 0.4),
+              inset 0 3px 6px rgba(255, 255, 255, 0.6),
+              inset 0 -4px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Neumorphic Input & Debossed Elements */
+.neu-input {
+  background: rgba(245, 246, 250, 0.7);
+  box-shadow: inset 3px 3px 6px rgba(185, 190, 210, 0.4),
+              inset -3px -3px 6px rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.neu-input:focus {
+  outline: none;
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: inset 2px 2px 4px rgba(185, 190, 210, 0.5),
+              inset -2px -2px 4px rgba(255, 255, 255, 0.95),
+              0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.dark .neu-input {
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5),
+              inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .neu-input:focus {
+  border-color: rgba(129, 140, 248, 0.6);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6),
+              0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
+}
