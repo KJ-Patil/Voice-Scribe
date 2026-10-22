@@ -33,8 +33,8 @@ A full-stack web application for real-time speech-to-text transcription with spe
 
 ### 1. Clone and install
 ```bash
-git clone https://github.com/YOUR_USERNAME/voicescribe.git
-cd voicescribe
+git clone https://github.com/KJ-Patil/Voice-Scribe.git
+cd Voice-Scribe
 npm install
 ```
 
