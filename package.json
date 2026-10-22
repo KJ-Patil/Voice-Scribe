@@ -4,7 +4,7 @@
   "private": true,
   "description": "VoiceScribe - Real-Time Multilingual Speech-to-Text Platform with Glassmorphism, Claymorphism & Neumorphism UI",
   "scripts": {
-    "dev": "concurrently -n \"NEXT,WS\" -c \"cyan,magenta\" \"next dev\" \"tsx server/ws-server.ts\"",
+    "dev": "next dev",
     "dev:next": "next dev",
     "dev:ws": "tsx server/ws-server.ts",
     "build": "prisma generate && next build",

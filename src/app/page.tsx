@@ -85,7 +85,6 @@ export default function Home() {
     recordingDuration,
     audioLevel,
     errorMessage,
-    wsStatus,
     startRecording,
     stopRecording,
     setErrorMessage,
@@ -150,7 +149,6 @@ export default function Home() {
         audioLevel={audioLevel}
         liveTranscript={liveTranscript}
         errorMessage={errorMessage}
-        wsStatus={wsStatus}
         selectedLanguage={selectedLanguage}
         onSelectLanguage={setSelectedLanguage}
         onStart={startRecording}

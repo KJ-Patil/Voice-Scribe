@@ -5,24 +5,19 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 interface UseVoiceRecorderProps {
   onPartialTranscript: (text: string) => void;
   onFinalTranscript: (record: any) => void;
-  wsUrl?: string;
   selectedLanguage: string;
 }
 
 export function useVoiceRecorder({
   onPartialTranscript,
   onFinalTranscript,
-  wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001',
   selectedLanguage,
 }: UseVoiceRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
 
-  const socketRef = useRef<WebSocket | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -32,54 +27,10 @@ export function useVoiceRecorder({
   const accumulatedTextRef = useRef<string>('');
   const recognitionRef = useRef<any>(null);
 
-  // Store callbacks in refs to avoid WebSocket reconnection on every render
   const onPartialRef = useRef(onPartialTranscript);
   const onFinalRef = useRef(onFinalTranscript);
   useEffect(() => { onPartialRef.current = onPartialTranscript; }, [onPartialTranscript]);
   useEffect(() => { onFinalRef.current = onFinalTranscript; }, [onFinalTranscript]);
-
-  // WebSocket connection -- only depends on wsUrl, not callbacks
-  useEffect(() => {
-    let ws: WebSocket;
-    try {
-      setWsStatus('connecting');
-      ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        setWsStatus('connected');
-        setErrorMessage(null);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === 'final') {
-            onFinalRef.current(data.record);
-          } else if (data.type === 'error') {
-            setErrorMessage(data.message || 'Speech recognition error');
-          }
-        } catch (e) {
-          console.error('Error parsing WS message:', e);
-        }
-      };
-
-      ws.onclose = () => {
-        setWsStatus('disconnected');
-      };
-
-      ws.onerror = () => {
-        setWsStatus('disconnected');
-      };
-
-      socketRef.current = ws;
-    } catch (e: any) {
-      setWsStatus('disconnected');
-    }
-
-    return () => {
-      if (ws) ws.close();
-    };
-  }, [wsUrl]);
 
   const updateAudioMeter = useCallback(() => {
     if (!analyserRef.current) return;
@@ -132,35 +83,7 @@ export function useVoiceRecorder({
         setRecordingDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 500);
 
-      const ws = socketRef.current;
-
-      // Stream audio to WebSocket for Gemini transcription on stop
-      if (ws && ws.readyState === WebSocket.OPEN) {
-
-        let mimeType = '';
-        if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-          mimeType = 'audio/ogg;codecs=opus';
-        } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-          mimeType = 'audio/webm;codecs=opus';
-        } else {
-          mimeType = 'audio/webm';
-        }
-
-        ws.send(JSON.stringify({ action: 'config', language: selectedLanguage, mimeType }));
-
-        const recorder = new MediaRecorder(stream, { mimeType });
-        mediaRecorderRef.current = recorder;
-
-        recorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-            ws.send(event.data);
-          }
-        };
-
-        recorder.start(1000);
-      }
-
-      // Browser SpeechRecognition for live partial text
+      // Browser SpeechRecognition for live text
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -199,6 +122,8 @@ export function useVoiceRecorder({
         };
 
         recognition.start();
+      } else {
+        setErrorMessage('Speech Recognition is not supported. Please use Chrome or Edge.');
       }
 
       setIsRecording(true);
@@ -221,18 +146,11 @@ export function useVoiceRecorder({
     const duration = Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
     const capturedText = accumulatedTextRef.current.trim();
 
-    // Stop browser SpeechRecognition
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch (e) {}
       recognitionRef.current = null;
     }
 
-    // Stop MediaRecorder
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-    }
-
-    // Stop mic stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
@@ -240,7 +158,6 @@ export function useVoiceRecorder({
       audioContextRef.current.close().catch(() => {});
     }
 
-    // ALWAYS save via REST API -- this is reliable, no WebSocket dependency
     const textToSave = capturedText || '(No speech detected)';
     try {
       const res = await fetch('/api/transcriptions', {
@@ -266,7 +183,6 @@ export function useVoiceRecorder({
     recordingDuration,
     audioLevel,
     errorMessage,
-    wsStatus,
     startRecording,
     stopRecording,
     setErrorMessage,

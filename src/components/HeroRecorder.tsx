@@ -10,7 +10,6 @@ interface HeroRecorderProps {
   audioLevel: number;
   liveTranscript: string;
   errorMessage: string | null;
-  wsStatus: 'connected' | 'disconnected' | 'connecting';
   selectedLanguage: string;
   onSelectLanguage: (lang: string) => void;
   onStart: () => void;
@@ -24,7 +23,6 @@ export default function HeroRecorder({
   audioLevel,
   liveTranscript,
   errorMessage,
-  wsStatus,
   selectedLanguage,
   onSelectLanguage,
   onStart,

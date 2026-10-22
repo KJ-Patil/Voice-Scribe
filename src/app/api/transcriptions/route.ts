@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { transcriptionCreateSchema, transcriptionQuerySchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/rate-limiter';
+import { refineWithGemini } from '@/lib/gemini';
 
 // GET /api/transcriptions - List with search, filter, and pagination
 export async function GET(request: NextRequest) {
@@ -97,11 +98,12 @@ export async function POST(request: NextRequest) {
 
     const { text, language, duration_s } = validation.data;
 
-    // Prisma parameterized insert supporting UTF-8 Devanagari
+    const refinedText = await refineWithGemini(text, language || 'Hinglish');
+
     const record = await prisma.transcription.create({
       data: {
-        text,
-        language: language || 'Auto-detect',
+        text: refinedText,
+        language: language || 'Hinglish',
         duration_s: duration_s || 0.0,
       },
     });
